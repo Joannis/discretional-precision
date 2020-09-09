@@ -81,7 +81,7 @@ extension ArbitraryInt {
     /// Input-normalizing initializer. Trims trailing zero values from the end
     /// of the input array of digits before sending them on to become the
     /// backing of a new value.
-    @usableFromInline internal init(normalizing digits: Array<Storage.Element>, sign: Bool) {
+    @inlinable public init(normalizing digits: Array<UInt>, sign: Bool) {
         var digits = digits
         while digits.last == 0 { _ = digits.removeLast() }
         if digits.isEmpty { digits = [0] }
