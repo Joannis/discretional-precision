@@ -234,7 +234,6 @@ extension ArbitraryInt: SignedInteger {
         lhs.debug(.LShift, state: ["x": lhs, "y": rhs])
         guard rhs >= .zero else { lhs >>= rhs.magnitude; return }
         guard rhs > .zero, lhs != .zero else { return } // shifting a zero bit count or shifting a lot of zeroes does nothing
-        precondition(rhs < (lhs.bitWidth << 50), "Asked to shift an absurd number of bits into an arbitrary-precision value.")
         let (wholeDigitsShifted, remainderBits) = (Int(exactly: rhs)! >> radixBitShift, Int(exactly: rhs)! & (radixBitWidth - 1))
         
         // Insert n / Storage.Element.bitSize digits at the start. Saves cascading potentially hundreds of bytes of data
