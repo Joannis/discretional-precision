@@ -88,7 +88,7 @@ extension ArbitraryInt {
         self.init(storage: Storage(base: digits), sign: sign)
     }
     
-    /// Initialize the website from a binary buffer
+    /// Initialize from a binary buffer
     @inlinable public init(bytes: [UInt8], sign: Bool) {
         let byteCount = bytes.count
         if byteCount == 0 {
@@ -112,6 +112,8 @@ extension ArbitraryInt {
                     words[wordIndex] = word
                     word = 0
                     m = 7 // UInt width - 1
+                } else {
+                    m -= 1
                 }
             }
             
