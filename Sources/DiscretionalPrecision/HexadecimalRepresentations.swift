@@ -20,6 +20,16 @@ extension BinaryInteger {
         "\(prefix ? "0x" : "")\(String(decoding: self.hexEncodedBytes(), as: Unicode.ASCII.self))"
     }
     
+    public func bytes() -> [UInt8] {
+            // Stride over the bit width in byte-sized chunks, mapping to individual bytes by
+            // shift + truncate, then invoke `Sequence.hexEncodedBytes()` to get a final output.
+            // The stride is reversed so results appear in big-endian order.
+            stride(from: 0, to: self.bitWidth, by: UInt8.bitWidth)
+                .lazy
+                .reversed()
+                .map { UInt8(truncatingIfNeeded: self >> $0) }
+    }
+    
     /// Return an array of `UInt8` bytes, each representing a single hexadecimal
     /// digit (1 nibble/4 bits) worth of the value of the integer as a single
     /// ASCII (and thus also UTF-8) codepoint. The array is padded on the far
