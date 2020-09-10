@@ -97,35 +97,6 @@ extension ArbitraryInt {
         
         self.init(normalizing: words, sign: sign)
     }
-    
-    public enum OverwrittenBits {
-        case none, one, two
-    }
-
-    public static func random(bits: Int = 2047, topBits: OverwrittenBits = .one, bottomBits: OverwrittenBits = .none) -> ArbitraryInt {
-        // Makes sure that 65 bits counts as 2 words, rather than 1
-        let wordCount = (bits + 64 - 1) / 64
-        let lastWordBits = (bits - 1) % 64
-        
-        // If all bits are set, a full mask is used, removing no bits
-        // If bits are missing, the extra bits are removed
-        let lastWordBitMask = lastWordBits == 64 ? UInt.max : (1 << (UInt(lastWordBits) + 1)) - 1
-        
-        let words = [UInt](unsafeUninitializedCapacity: wordCount) { (buffer, count) in
-            var rng = SystemRandomNumberGenerator()
-            
-            if wordCount != 0 {
-                for i in 0..<wordCount {
-                    buffer[i] = rng.next()
-                }
-            }
-            
-            buffer[wordCount - 1] &= lastWordBitMask
-            count = wordCount
-        }
-        
-        return ArbitraryInt(storage: Storage(base: words), sign: false)
-    }
 }
 
 extension ArbitraryInt.Storage {
