@@ -55,7 +55,6 @@ public struct ArbitraryInt {
         assert(!self.storage.isEmpty) // There must be at least one digit.
         assert(self.storage.last! != 0 || (self.storage.count == 1 && self.sign == false)) // The last digit must be non-zero unless it's alone and positive.
     }
-    
 }
 
 extension ArbitraryInt: SignedInteger {

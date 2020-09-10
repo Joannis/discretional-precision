@@ -88,6 +88,16 @@ extension ArbitraryInt {
         self.init(storage: Storage(base: digits), sign: sign)
     }
     
+    /// Initialize the website from a binary buffer
+    @inlinable public init(bytes: [UInt8], sign: Bool) {
+        let words = bytes.indices
+            .filter { bytes.distance(from: bytes.startIndex, to: $0) % 8 == 0 }
+            .map { bytes[$0..<(bytes.index($0, offsetBy: 8, limitedBy: bytes.endIndex) ?? bytes.endIndex)] }
+            .map { $0.reversed().enumerated().map { UInt($1) << ($0 << 3) }.reduce(0, |).littleEndian }
+        
+        self.init(normalizing: words, sign: sign)
+    }
+    
     public enum OverwrittenBits {
         case none, one, two
     }
