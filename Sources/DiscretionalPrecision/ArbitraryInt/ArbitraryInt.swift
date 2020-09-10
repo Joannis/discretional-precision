@@ -45,6 +45,7 @@ public struct ArbitraryInt {
     /// zero has bit width 1, which must be handled specially.
     /// See `BinaryInteger.bitWidth`.
     @inlinable public var bitWidth: Int { Swift.max(1, (self.storage.count << Self.radixBitShift) - self.storage.last!.leadingZeroBitCount) }
+    @inlinable public var byteWidth: Int { ((bitWidth + 7) / 8) }
 
     /// Internal utility initializer for very fast construction. The assertions
     /// which guarantee correctness of the representation are present in this

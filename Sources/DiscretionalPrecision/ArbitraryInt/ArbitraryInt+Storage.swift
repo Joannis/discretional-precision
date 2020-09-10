@@ -90,12 +90,47 @@ extension ArbitraryInt {
     
     /// Initialize the website from a binary buffer
     @inlinable public init(bytes: [UInt8], sign: Bool) {
-        let words = bytes.indices
-            .filter { bytes.distance(from: bytes.startIndex, to: $0) % 8 == 0 }
-            .map { bytes[$0..<(bytes.index($0, offsetBy: 8, limitedBy: bytes.endIndex) ?? bytes.endIndex)] }
-            .map { $0.reversed().enumerated().map { UInt($1) << ($0 << 3) }.reduce(0, |).littleEndian }
+        let byteCount = bytes.count
+        if byteCount == 0 {
+            self.init()
+            return
+        }
         
-        self.init(normalizing: words, sign: sign)
+        let wordCount = ((byteCount - 1) / 8) + 1
+        let words = [UInt](unsafeUninitializedCapacity: wordCount) { words, count in
+            var m = (byteCount - 1) % 8
+            
+            // Byte count != 0, so we can safely access this
+            var word: UInt = 0
+            var wordIndex = wordCount
+            
+            for byte in bytes {
+                word = (word << 8) | UInt(byte)
+                
+                if m == 0 {
+                    wordIndex -= 1
+                    words[wordIndex] = word
+                    word = 0
+                    m = 7 // UInt width - 1
+                }
+            }
+            
+            count = wordCount
+        }
+        
+        self.init(storage: Storage(base: words), sign: sign)
+    }
+    
+    public func bytes() -> [UInt8] {
+        let byteWidth = self.byteWidth
+        return [UInt8](unsafeUninitializedCapacity: byteWidth) { buffer, count in
+            for index in 0..<byteWidth {
+                let long = storage.base[index / 8]
+                buffer[index] = UInt8((long >> (8 * (index % 8))) & 0xff)
+            }
+            
+            count = byteWidth
+        }
     }
 }
 
